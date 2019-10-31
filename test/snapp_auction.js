@@ -22,7 +22,6 @@ contract("SnappAuction", async (accounts) => {
       const instance = await SnappAuction.new()
       assert.equal(await instance.hasAuctionBeenApplied.call(0), false)
     })
-
     it("getAuctionCreationTimestamp(slot)", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
@@ -32,17 +31,14 @@ contract("SnappAuction", async (accounts) => {
       const timestamp = (await web3.eth.getBlock(tx.receipt.blockNumber)).timestamp
       assert.equal((await instance.getAuctionCreationTimestamp.call(0)).toNumber(), timestamp)
     })
-
     it("getOrderHash(slot)", async () => {
       const instance = await SnappAuction.new()
       assert.equal(await instance.getOrderHash.call(0), 0x0)
     })
-
     it("getStandingOrderHash(userId, batchIndex)", async () => {
       const instance = await SnappAuction.new()
       assert.equal(await instance.getStandingOrderHash.call(0, 0), 0x0)
     })
-
     it("maxUnreservedOrderCount", async () => {
       const instance = await SnappAuction.new()
       const AUCTION_BATCH_SIZE = await instance.AUCTION_BATCH_SIZE()
@@ -54,11 +50,10 @@ contract("SnappAuction", async (accounts) => {
         AUCTION_BATCH_SIZE - (AUCTION_RESERVED_ACCOUNTS * AUCTION_RESERVED_ACCOUNT_BATCH_SIZE)
       )
     })
-
   })
 
   describe("placeSellOrder()", () => {
-    it("Reject: unregisterd account", async () => {
+    it("Rejects unregisterd account", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
 
@@ -67,8 +62,7 @@ contract("SnappAuction", async (accounts) => {
         "Must have registered account"
       )
     })
-
-    it("Reject: unregistered buyToken", async () => {
+    it("Rejects unregistered buyToken", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
 
@@ -77,8 +71,7 @@ contract("SnappAuction", async (accounts) => {
         "Buy token is not registered"
       )
     })
-
-    it("Reject: unregistered sellToken", async () => {
+    it("Rejects unregistered sellToken", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       await truffleAssert.reverts(
@@ -86,8 +79,7 @@ contract("SnappAuction", async (accounts) => {
         "Sell token is not registered"
       )
     })
-
-    it("Reject: Third batch with two unapplied", async () => {
+    it("Rejects Third batch with two unapplied", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       await instance.placeSellOrder(0, 1, 1, 1, { from: user_1 })
@@ -104,8 +96,7 @@ contract("SnappAuction", async (accounts) => {
         "Too many pending auctions"
       )
     })
-
-    it("Generic sell order", async () => {
+    it("Accepts generic sell order", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       await instance.placeSellOrder(0, 1, 1, 1, { from: user_1 })
@@ -116,8 +107,7 @@ contract("SnappAuction", async (accounts) => {
       assert.equal(currentAuction.numOrders, 1)
       assert.notEqual(currentAuction.orderhash, 0)
     })
-
-    it("Generic sell orders over two batches", async () => {
+    it("Accepts generic sell orders over two batches", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       await instance.placeSellOrder(0, 1, 1, 1, { from: user_1 })
@@ -131,7 +121,7 @@ contract("SnappAuction", async (accounts) => {
   })
 
   describe("placeStandingSellOrder()", () => {
-    it("Reject: unregisterd account", async () => {
+    it("Rejects unregisterd account", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
 
@@ -140,8 +130,7 @@ contract("SnappAuction", async (accounts) => {
         "Must have registered account"
       )
     })
-
-    it("Reject: unregistered buyToken", async () => {
+    it("Rejects unregistered buyToken", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
 
@@ -150,8 +139,7 @@ contract("SnappAuction", async (accounts) => {
         "Buy token is not registered"
       )
     })
-
-    it("Reject: unregistered sellToken", async () => {
+    it("Rejects unregistered sellToken", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       await truffleAssert.reverts(
@@ -159,8 +147,7 @@ contract("SnappAuction", async (accounts) => {
         "Sell token is not registered"
       )
     })
-
-    it("Reject: More than AUCTION_RESERVED_ACCOUNT_BATCH_SIZE=10 orders", async () => {
+    it("Rejects More than AUCTION_RESERVED_ACCOUNT_BATCH_SIZE=10 orders", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       const AUCTION_RESERVED_ACCOUNT_BATCH_SIZE = await instance.AUCTION_RESERVED_ACCOUNT_BATCH_SIZE()
@@ -170,8 +157,7 @@ contract("SnappAuction", async (accounts) => {
         "Too many orders for reserved batch"
       )
     })
-
-    it("Reject: order data is not a multiple of 26", async () => {
+    it("Rejects order data is not a multiple of 26", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       const AUCTION_RESERVED_ACCOUNT_BATCH_SIZE = await instance.AUCTION_RESERVED_ACCOUNT_BATCH_SIZE()
@@ -181,7 +167,6 @@ contract("SnappAuction", async (accounts) => {
         "Each order should be packed in 26 bytes!"
       )
     })
-
     it("Rejects standing order requests from non-reserved accounts", async () => {
       const instance = await SnappAuction.new()
 
@@ -196,8 +181,7 @@ contract("SnappAuction", async (accounts) => {
         "Account is not a reserved account"
       )
     })
-
-    it("Generic standing sell order as replacement of current batch (1 TX)", async () => {
+    it("Accepts generic standing order as replacement of current batch (1 TX)", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       let orders = [[0, 0, 3, 3], [0, 1, 1, 1]]
@@ -211,8 +195,7 @@ contract("SnappAuction", async (accounts) => {
       const validFromIndex = await instance.getStandingOrderValidFrom(userId, pointer)
       assert.equal(validFromIndex, 0, "validFromIndex was not update correctly")
     })
-
-    it("Generic standing sell order as replacement of current batch(2 TX)", async () => {
+    it("Accepts generic standing order as replacement of current batch (2 TX)", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       let orders = [[0, 0, 3, 3], [0, 1, 1, 1]]
@@ -234,8 +217,7 @@ contract("SnappAuction", async (accounts) => {
       const validToAuctionIndex = await instance.getStandingOrderValidFrom(userId, pointer - 1)
       assert.equal(validToAuctionIndex, 0)
     })
-
-    it("Generic standing sell order as new submission ", async () => {
+    it("Accepts generic standing order as new submission ", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       let orders = [[0, 0, 3, 3], [0, 1, 1, 1]]
@@ -270,7 +252,7 @@ contract("SnappAuction", async (accounts) => {
     const auctionSolution = prices + volumes.slice(2)
     const order = encodeOrder(0, 1, 1, 1)
 
-    it("Cannot apply auction before first order", async () => {
+    it("Rejects call before first order placed", async () => {
       const instance = await SnappAuction.new()
       const current_slot = await instance.auctionIndex.call()
       await truffleAssert.reverts(
@@ -278,7 +260,6 @@ contract("SnappAuction", async (accounts) => {
         "Requested auction slot does not exist"
       )
     })
-
     it("Only owner", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
@@ -290,8 +271,7 @@ contract("SnappAuction", async (accounts) => {
       await truffleAssert.reverts(
         instance.applyAuction(current_slot, current_state, new_state, auctionSolution, { from: user_1 }))
     })
-
-    it("Reject: active slot", async () => {
+    it("Rejects active slot", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       await instance.placeSellOrders(order, { from: user_1 })
@@ -306,8 +286,7 @@ contract("SnappAuction", async (accounts) => {
         "Requested auction slot is still active"
       )
     })
-
-    it("Reject: Incorrect state root", async () => {
+    it("Rejects Incorrect state root", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       await instance.placeSellOrders(order, { from: user_1 })
@@ -329,8 +308,7 @@ contract("SnappAuction", async (accounts) => {
         "Incorrect state root"
       )
     })
-
-    it("Reject: out-of-range slot", async () => {
+    it("Rejects out-of-range slot", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       await instance.placeSellOrders(order, { from: user_1 })
@@ -350,8 +328,7 @@ contract("SnappAuction", async (accounts) => {
         "Requested auction slot does not exist"
       )
     })
-
-    it("rejects calls when still in bidding phase", async () => {
+    it("Rejects calls when still in bidding phase", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       await instance.placeSellOrders(order, { from: user_1 })
@@ -367,74 +344,7 @@ contract("SnappAuction", async (accounts) => {
         "Requested auction still in bidding phase or earlier"
       )
     })
-
-    it("successfully apply's auction", async () => {
-      const instance = await SnappAuction.new()
-      await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
-      await instance.placeSellOrders(order, { from: user_1 })
-
-      const current_slot = (await instance.auctionIndex.call()).toNumber()
-      const current_state = await instance.getCurrentStateRoot()
-      const auction_state = await instance.auctions.call(current_slot)
-
-      // Wait for current order slot to be inactive & bidding phase to pass
-      await waitForNSeconds(181 + 180)
-
-      // Ensure order slot is inactive
-      assert.equal(await isActive(auction_state), false)
-
-      await instance.applyAuction(current_slot, current_state, new_state, auctionSolution)
-
-      const state_index = (await instance.stateIndex.call()).toNumber()
-      const applied_index = ((await instance.auctions(current_slot)).appliedAccountStateIndex).toNumber()
-
-      assert.equal(applied_index, state_index)
-    })
-
-    it("applies trivial auction", async () => {
-      const instance = await SnappAuction.new()
-      await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
-      await instance.placeSellOrders(order, { from: user_1 })
-
-      const current_slot = (await instance.auctionIndex.call()).toNumber()
-      const current_state = await instance.getCurrentStateRoot()
-
-      // Wait for current order slot to be inactive & bidding phase to pass
-      await waitForNSeconds(181 + 180)
-      // wait for regular settlement period to pass!
-      await waitForNSeconds(181)
-
-      const tx = await instance.applyAuction(
-        current_slot, current_state, new_state, auctionSolution)
-
-      assert.equal(tx.logs[0].args.pricesAndVolumes, null, "auction solution should be empty")
-    })
-
-    it("accepts and applies winner's solution", async () => {
-      const instance = await SnappAuction.new()
-      await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
-      await instance.placeSellOrders(order, { from: user_1 })
-
-      const current_slot = (await instance.auctionIndex.call()).toNumber()
-      const current_state = await instance.getCurrentStateRoot()
-
-      // Wait for current order slot to be inactive
-      await waitForNSeconds(181)
-
-      // Provide winning bid for auction solution.
-      const AUCTION_RESERVED_ACCOUNTS = await instance.AUCTION_RESERVED_ACCOUNTS()
-      const standingOrderIndexList = new Array(AUCTION_RESERVED_ACCOUNTS.toNumber())
-      standingOrderIndexList.fill(0)
-      const orderhash = await instance.calculateOrderHash(current_slot, standingOrderIndexList)
-      await instance.auctionSolutionBid(current_slot, current_state, orderhash, standingOrderIndexList, new_state, 1)
-
-      // Wait for bidding phase to pass
-      await waitForNSeconds(181)
-      // winner is owner in this context (and currently has to be)
-      await instance.applyAuction(current_slot, current_state, new_state, auctionSolution)
-    })
-
-    it("rejects imposter winner's solution", async () => {
+    it("Rejects imposter winner's solution", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       await instance.placeSellOrders(order, { from: user_1 })
@@ -464,8 +374,109 @@ contract("SnappAuction", async (accounts) => {
         "Only winner of bidding phase may apply auction here"
       )
     })
+    it("Accepts generic call scenario", async () => {
+      const instance = await SnappAuction.new()
+      await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
+      await instance.placeSellOrders(order, { from: user_1 })
 
-    it("records winning bid and allows fallback applyAuction", async () => {
+      const current_slot = (await instance.auctionIndex.call()).toNumber()
+      const current_state = await instance.getCurrentStateRoot()
+      const auction_state = await instance.auctions.call(current_slot)
+
+      // Wait for current order slot to be inactive & bidding phase to pass
+      await waitForNSeconds(181 + 180)
+
+      // Ensure order slot is inactive
+      assert.equal(await isActive(auction_state), false)
+
+      await instance.applyAuction(current_slot, current_state, new_state, auctionSolution)
+
+      const state_index = (await instance.stateIndex.call()).toNumber()
+      const applied_index = ((await instance.auctions(current_slot)).appliedAccountStateIndex).toNumber()
+
+      assert.equal(applied_index, state_index)
+    })
+    it("Rejects non-sequential slot application", async () => {
+      const instance = await SnappAuction.new()
+      await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
+      await instance.placeSellOrders(order, { from: user_1 })
+
+      // Wait for current order slot to be inactive & bidding phase to pass
+      await waitForNSeconds(181 + 180)
+
+      // Place an order to ensure second order slot is created.
+      const order_tx = await instance.placeSellOrders(order, { from: user_1 })
+      const second_slot = order_tx.logs[0].args.auctionId.toNumber()
+      const current_state = await instance.getCurrentStateRoot()
+
+      await truffleAssert.reverts(
+        instance.applyAuction(second_slot, current_state, new_state, auctionSolution),
+        "Must apply auction slots in order!"
+      )
+    })
+    it("Accepts and applies winner's solution", async () => {
+      const instance = await SnappAuction.new()
+      await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
+      await instance.placeSellOrders(order, { from: user_1 })
+
+      const current_slot = (await instance.auctionIndex.call()).toNumber()
+      const current_state = await instance.getCurrentStateRoot()
+
+      // Wait for current order slot to be inactive
+      await waitForNSeconds(181)
+
+      // Provide winning bid for auction solution.
+      const AUCTION_RESERVED_ACCOUNTS = await instance.AUCTION_RESERVED_ACCOUNTS()
+      const standingOrderIndexList = new Array(AUCTION_RESERVED_ACCOUNTS.toNumber())
+      standingOrderIndexList.fill(0)
+      const orderhash = await instance.calculateOrderHash(current_slot, standingOrderIndexList)
+      await instance.auctionSolutionBid(current_slot, current_state, orderhash, standingOrderIndexList, new_state, 1)
+
+      // Wait for bidding phase to pass
+      await waitForNSeconds(181)
+      // winner is owner in this context (and currently has to be)
+      await instance.applyAuction(current_slot, current_state, new_state, auctionSolution)
+    })
+    it("Accepts and applies trivial auction", async () => {
+      const instance = await SnappAuction.new()
+      await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
+      await instance.placeSellOrders(order, { from: user_1 })
+
+      const current_slot = (await instance.auctionIndex.call()).toNumber()
+      const current_state = await instance.getCurrentStateRoot()
+
+      // Wait for current order slot to be inactive & bidding phase to pass
+      await waitForNSeconds(181 + 180)
+      // wait for regular settlement period to pass!
+      await waitForNSeconds(181)
+
+      const tx = await instance.applyAuction(
+        current_slot, current_state, new_state, auctionSolution)
+
+      assert.equal(tx.logs[0].args.pricesAndVolumes, null, "auction solution should be empty")
+    })
+    it("Rejects apply same slot twice", async () => {
+      const instance = await SnappAuction.new()
+      await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
+      const order = encodeOrder(0, 1, 1, 1)
+      await instance.placeSellOrders(order, { from: user_1 })
+
+      const current_slot = (await instance.auctionIndex.call()).toNumber()
+      const current_state = await instance.getCurrentStateRoot()
+
+      // Wait for current order slot to be inactive & bidding phase to pass
+      await waitForNSeconds(181 + 180)
+
+      // Apply auction once
+      await instance.applyAuction(current_slot, current_state, new_state, auctionSolution)
+
+      // Try to apply same slot again
+      await truffleAssert.reverts(
+        instance.applyAuction(current_slot, current_state, new_state, auctionSolution),
+        "Auction already applied"
+      )
+    })
+    it("Records winning bid and allows fallback applyAuction", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       await instance.placeSellOrders(order, { from: user_1 })
@@ -495,51 +506,10 @@ contract("SnappAuction", async (accounts) => {
         current_slot, current_state, new_state, auctionSolution
       )
     })
-
-    it("Reject: apply same slot twice", async () => {
-      const instance = await SnappAuction.new()
-      await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
-      const order = encodeOrder(0, 1, 1, 1)
-      await instance.placeSellOrders(order, { from: user_1 })
-
-      const current_slot = (await instance.auctionIndex.call()).toNumber()
-      const current_state = await instance.getCurrentStateRoot()
-
-      // Wait for current order slot to be inactive & bidding phase to pass
-      await waitForNSeconds(181 + 180)
-
-      // Apply auction once
-      await instance.applyAuction(current_slot, current_state, new_state, auctionSolution)
-
-      // Try to apply same slot again
-      await truffleAssert.reverts(
-        instance.applyAuction(current_slot, current_state, new_state, auctionSolution),
-        "Auction already applied"
-      )
-    })
-
-    it("Must apply slots sequentially", async () => {
-      const instance = await SnappAuction.new()
-      await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
-      await instance.placeSellOrders(order, { from: user_1 })
-
-      // Wait for current order slot to be inactive & bidding phase to pass
-      await waitForNSeconds(181 + 180)
-
-      // Place an order to ensure second order slot is created.
-      const order_tx = await instance.placeSellOrders(order, { from: user_1 })
-      const second_slot = order_tx.logs[0].args.auctionId.toNumber()
-      const current_state = await instance.getCurrentStateRoot()
-
-      await truffleAssert.reverts(
-        instance.applyAuction(second_slot, current_state, new_state, auctionSolution),
-        "Must apply auction slots in order!"
-      )
-    })
   })
 
   describe("calculateOrderHash()", () => {
-    it("calculates the orderHash with standingOrderIndex = [0,...,0]", async () => {
+    it("Calculates the orderHash with standingOrderIndex = [0,...,0]", async () => {
       const instance = await SnappAuction.new()
       const curr_slot = await instance.auctionIndex.call()
       const AUCTION_RESERVED_ACCOUNTS = await instance.AUCTION_RESERVED_ACCOUNTS()
@@ -548,7 +518,7 @@ contract("SnappAuction", async (accounts) => {
       const bytes = await instance.calculateOrderHash(curr_slot, standingOrderIndexList)
       assert.notEqual(bytes, "0x0000000000000000000000000000000000000000", "orderHash was not calculated correctly")
     })
-    it("throws is standingOrderIndex is not valid in slot", async () => {
+    it("Rejects if standingOrderIndex is not valid in slot", async () => {
       const instance = await SnappAuction.new()
 
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
@@ -569,19 +539,21 @@ contract("SnappAuction", async (accounts) => {
       const standingOrderIndexList = new Array(AUCTION_RESERVED_ACCOUNTS.toNumber())
       standingOrderIndexList.fill(0)
       standingOrderIndexList[1] = 1
-      await truffleAssert.reverts(instance.calculateOrderHash.sendTransaction(curr_slot, standingOrderIndexList),
-        "non-valid standingOrderBatch referenced")
+      await truffleAssert.reverts(
+        instance.calculateOrderHash.sendTransaction(curr_slot, standingOrderIndexList),
+        "non-valid standingOrderBatch referenced"
+      )
     })
   })
 
   describe("orderBatchIsValidAtAuctionIndex()", () => {
-    it("checks a valid orderBatch", async () => {
+    it("Correctly identifies valid orderBatch", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       const isValid = await instance.orderBatchIsValidAtAuctionIndex(0, 0, 0)
       assert.equal(isValid, true, "orderBatchIsValidAtAuctionIndex should return true")
     })
-    it("checks an invalid orderBatch", async () => {
+    it("Correctly identifies invalid orderBatch", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       let orders = [[0, 0, 3, 3], [0, 1, 1, 1]]
@@ -602,7 +574,7 @@ contract("SnappAuction", async (accounts) => {
   })
 
   describe("placeSellOrders()", () => {
-    it("Reject: unregisterd account", async () => {
+    it("Rejects unregisterd account", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       const order = encodeOrder(0, 1, 1, 1)
@@ -611,8 +583,7 @@ contract("SnappAuction", async (accounts) => {
         "Must have registered account"
       )
     })
-
-    it("Reject: unregistered buyToken", async () => {
+    it("Rejects unregistered buyToken", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       const order = encodeOrder(2, 1, 1, 1)
@@ -621,8 +592,7 @@ contract("SnappAuction", async (accounts) => {
         "Buy token is not registered"
       )
     })
-
-    it("Reject: unregistered sellToken", async () => {
+    it("Rejects unregistered sellToken", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       const order = encodeOrder(1, 2, 1, 1)
@@ -631,8 +601,7 @@ contract("SnappAuction", async (accounts) => {
         "Sell token is not registered"
       )
     })
-
-    it("Reject: Third batch with two unapplied", async () => {
+    it("Rejects third batch with two previous unapplied", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       const order = encodeOrder(0, 1, 1, 1)
@@ -650,7 +619,6 @@ contract("SnappAuction", async (accounts) => {
         "Too many pending auctions"
       )
     })
-
     it("Rejects order data with incorrect length", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
@@ -661,8 +629,7 @@ contract("SnappAuction", async (accounts) => {
         "Each order should be packed in 26 bytes!"
       )
     })
-
-    it("Generic sell order", async () => {
+    it("Accepts generic sell order", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       const order = encodeOrder(0, 1, 1, 1)
@@ -674,8 +641,7 @@ contract("SnappAuction", async (accounts) => {
       assert.equal(currentAuction.numOrders, 1)
       assert.notEqual(currentAuction.shaHash, 0)
     })
-
-    it("Generic sell orders over two batches", async () => {
+    it("Accepts generic sell orders over two batches", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       const order = encodeOrder(0, 1, 1, 1)
@@ -687,8 +653,7 @@ contract("SnappAuction", async (accounts) => {
       const auctionIndex = (await instance.auctionIndex.call()).toNumber()
       assert.equal(auctionIndex, 1)
     })
-
-    it("Large sell order", async () => {
+    it("Accepts large sell order", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       const largeNumberString = "79228162514264337593543950335"  // This is 2**96 - 1
@@ -697,8 +662,7 @@ contract("SnappAuction", async (accounts) => {
       const tx = await instance.placeSellOrders(order, { from: user_1 })
       assert.equal(tx.logs[0].args.sellAmount.toString(), largeNumberString)
     })
-
-    it("Generic Multi order (2)", async () => {
+    it("Accepts generic multi-order (2)", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       const order1 = encodeOrder(0, 1, 3, 4)
@@ -711,8 +675,7 @@ contract("SnappAuction", async (accounts) => {
 
       assert.equal(currentAuction.numOrders, 2)
     })
-
-    it("Encodes order information in emitted event", async () => {
+    it("Encodes order information as expected in event emmission", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       const order = encodeOrder(0, 1, 2, 3)
@@ -741,7 +704,6 @@ contract("SnappAuction", async (accounts) => {
     const auctionSolution = prices + volumes.slice(2)
 
     const order = encodeOrder(0, 1, 1, 1)
-
     it("Rejects if previous auction not resolved", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
@@ -768,7 +730,6 @@ contract("SnappAuction", async (accounts) => {
         "Previous auction not yet resolved!"
       )
     })
-
     it("Rejects on incorrect stateRoot", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
@@ -792,8 +753,7 @@ contract("SnappAuction", async (accounts) => {
         "Incorrect state root"
       )
     })
-
-    it("Rejects Incorrect order hash", async () => {
+    it("Rejects incorrect order hash", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       await instance.placeSellOrders(order, { from: user_1 })
@@ -818,7 +778,6 @@ contract("SnappAuction", async (accounts) => {
         "Order hash doesn't agree"
       )
     })
-
     it("Rejects if auction already applied", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
@@ -843,7 +802,6 @@ contract("SnappAuction", async (accounts) => {
         "Auction already applied"
       )
     })
-
     it("Rejects if requested auction slot doesn't exist", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
@@ -869,7 +827,6 @@ contract("SnappAuction", async (accounts) => {
         "Requested auction slot does not exist"
       )
     })
-
     it("Rejects if order collection still active", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
@@ -888,7 +845,6 @@ contract("SnappAuction", async (accounts) => {
         "Requested auction slot is still active"
       )
     })
-
     it("Rejects when bidding period has expired", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
@@ -912,7 +868,38 @@ contract("SnappAuction", async (accounts) => {
         "Bidding period for this auction has expired"
       )
     })
+    it("Rejects proposed values <= to current", async () => {
+      const instance = await SnappAuction.new()
+      await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
+      await instance.placeSellOrders(order, { from: user_1 })
 
+      const current_slot = (await instance.auctionIndex.call()).toNumber()
+      const current_state = await instance.getCurrentStateRoot()
+
+      const AUCTION_RESERVED_ACCOUNTS = await instance.AUCTION_RESERVED_ACCOUNTS()
+      const standingOrderIndexList = new Array(AUCTION_RESERVED_ACCOUNTS.toNumber())
+      standingOrderIndexList.fill(0)
+      const orderhash = await instance.calculateOrderHash(current_slot, standingOrderIndexList)
+
+      // Wait for current order slot to be inactive
+      await waitForNSeconds(181)
+
+      await instance.auctionSolutionBid(
+        current_slot, current_state, orderhash, standingOrderIndexList, new_state, low_objective
+      )
+
+      // Reject Equal
+      await truffleAssert.reverts(
+        instance.auctionSolutionBid(current_slot, current_state, orderhash, standingOrderIndexList, new_state, low_objective),
+        "Proposed objective value is less than existing"
+      )
+
+      // Reject less than
+      await truffleAssert.reverts(
+        instance.auctionSolutionBid(current_slot, current_state, orderhash, standingOrderIndexList, new_state, 0),
+        "Proposed objective value is less than existing"
+      )
+    })
     it("Accepts and records first proposal", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
@@ -942,40 +929,6 @@ contract("SnappAuction", async (accounts) => {
       assert.equal(auction_results.objectiveValue, 1)
       assert.equal(auction_results.solver, user_1)
     })
-
-    it("Rejects proposed values < or = to current", async () => {
-      const instance = await SnappAuction.new()
-      await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
-      await instance.placeSellOrders(order, { from: user_1 })
-
-      const current_slot = (await instance.auctionIndex.call()).toNumber()
-      const current_state = await instance.getCurrentStateRoot()
-
-      const AUCTION_RESERVED_ACCOUNTS = await instance.AUCTION_RESERVED_ACCOUNTS()
-      const standingOrderIndexList = new Array(AUCTION_RESERVED_ACCOUNTS.toNumber())
-      standingOrderIndexList.fill(0)
-      const orderhash = await instance.calculateOrderHash(current_slot, standingOrderIndexList)
-
-      // Wait for current order slot to be inactive
-      await waitForNSeconds(181)
-
-      await instance.auctionSolutionBid(
-        current_slot, current_state, orderhash, standingOrderIndexList, new_state, low_objective
-      )
-
-      // reject Equal
-      await truffleAssert.reverts(
-        instance.auctionSolutionBid(current_slot, current_state, orderhash, standingOrderIndexList, new_state, low_objective),
-        "Proposed objective value is less than existing"
-      )
-
-      // reject less than
-      await truffleAssert.reverts(
-        instance.auctionSolutionBid(current_slot, current_state, orderhash, standingOrderIndexList, new_state, 0),
-        "Proposed objective value is less than existing"
-      )
-    })
-
     it("Accepts zero surplus proposal", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
@@ -1000,8 +953,7 @@ contract("SnappAuction", async (accounts) => {
       assert.equal(auction_results.objectiveValue, 0)
       assert.equal(auction_results.solver, user_1)
     })
-
-    it("Accepts updates better proposal", async () => {
+    it("Accepts and updates better proposal", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       await instance.placeSellOrders(order, { from: user_1 })
@@ -1033,7 +985,6 @@ contract("SnappAuction", async (accounts) => {
       assert.equal(auction_results.objectiveValue, high_objective)
       assert.equal(auction_results.solver, user_1)
     })
-
     it("Treats special case of alternate biddingStartTime", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
@@ -1078,7 +1029,7 @@ contract("SnappAuction", async (accounts) => {
   })
 
   describe("Larger Test Cases", () => {
-    it("Fill order batch", async () => {
+    it("Fills the order batch", async () => {
       const instance = await SnappAuction.new()
       await setupEnvironment(MintableERC20, instance, token_owner, [user_1], 2)
       const order = encodeOrder(0, 1, 2, 3)
