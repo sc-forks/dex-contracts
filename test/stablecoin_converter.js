@@ -1665,7 +1665,7 @@ contract("StablecoinConverter", async (accounts) => {
         solution.owners,
         solution.touchedOrderIds,
         volumes,
-        prices, 
+        prices,
         solution.tokenIdsForPrice,
         { from: solver }
       )
@@ -1798,6 +1798,7 @@ contract("StablecoinConverter", async (accounts) => {
         )
       }
       await closeAuction(stablecoinConverter)
+
       const solution = solutionSubmissionParams(smallExample.solutions[0], accounts, orderIds)
       await stablecoinConverter.submitSolution(
         batchIndex,
