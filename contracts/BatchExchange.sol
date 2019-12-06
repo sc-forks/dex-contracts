@@ -182,7 +182,7 @@ contract BatchExchange is EpochTokenLocker {
       * Emits an {OrderPlacement} event with all relevant order details.
       */
     function placeOrder(uint16 buyToken, uint16 sellToken, uint32 validUntil, uint128 buyAmount, uint128 sellAmount)
-        public
+        external
         returns (uint256)
     {
         return placeOrderInternal(buyToken, sellToken, getCurrentBatchId(), validUntil, buyAmount, sellAmount);
@@ -221,14 +221,14 @@ contract BatchExchange is EpochTokenLocker {
       * Emits {OrderCancelation} events for all cancelled orders and {OrderPlacement} events with all relevant new order details.
       */
     function replaceOrders(
-        uint256[] memory cancellations,
-        uint16[] memory buyTokens,
-        uint16[] memory sellTokens,
-        uint32[] memory validFroms,
-        uint32[] memory validUntils,
-        uint128[] memory buyAmounts,
-        uint128[] memory sellAmounts
-    ) public returns (uint256[] memory orderIds) {
+        uint256[] calldata cancellations,
+        uint16[] calldata buyTokens,
+        uint16[] calldata sellTokens,
+        uint32[] calldata validFroms,
+        uint32[] calldata validUntils,
+        uint128[] calldata buyAmounts,
+        uint128[] calldata sellAmounts
+    ) external returns (uint256[] memory orderIds) {
         cancelOrders(cancellations);
         return placeValidFromOrders(buyTokens, sellTokens, validFroms, validUntils, buyAmounts, sellAmounts);
     }
@@ -259,12 +259,12 @@ contract BatchExchange is EpochTokenLocker {
     function submitSolution(
         uint32 batchIndex,
         uint256 claimedObjectiveValue,
-        address[] memory owners,
-        uint16[] memory orderIds,
-        uint128[] memory buyVolumes,
-        uint128[] memory prices,
-        uint16[] memory tokenIdsForPrice
-    ) public returns (uint256) {
+        address[] calldata owners,
+        uint16[] calldata orderIds,
+        uint128[] calldata buyVolumes,
+        uint128[] calldata prices,
+        uint16[] calldata tokenIdsForPrice
+    ) external returns (uint256) {
         require(acceptingSolutions(batchIndex), "Solutions are no longer accepted for this batch");
         require(
             claimedObjectiveValue.mul(IMPROVEMENT_DENOMINATOR) > getCurrentObjectiveValue().mul(IMPROVEMENT_DENOMINATOR + 1),
@@ -369,7 +369,7 @@ contract BatchExchange is EpochTokenLocker {
     /** @dev View returning all byte-encoded sell orders
       * @return encoded bytes representing all orders ordered by (user, index)
       */
-    function getEncodedAuctionElements() public view returns (bytes memory elements) {
+    function getEncodedAuctionElements() external view returns (bytes memory elements) {
         if (allUsers.size() > 0) {
             address user = allUsers.first();
             bool stop = false;
